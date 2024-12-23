@@ -1,27 +1,30 @@
+// Required Variables
 const duration = 100,
   startPage = document.getElementById("startPage"),
   startButton = document.getElementById("startButton"),
   container_grid = document.getElementById("container-grid"),
   gridSize = document.getElementById("gridSize");
+
+// Starting...
 startButton.addEventListener("click", (e) => {
   e.preventDefault();
   startPage.classList.add("disable");
   let rowCols = getGridSize();
   container_grid.style.gridTemplateColumns = `repeat(${rowCols}, 1fr)`;
   container_grid.style.gridTemplateRows = `repeat(${rowCols}, 1fr)`;
+  let previousTime = 0;
   let gridArray = generateRandomArray(rowCols);
-
-  setInterval(() => {
-    container_grid.innerHTML = "";
-    drawCells(gridArray, rowCols);
+  drawCells(gridArray, rowCols);
+  timeInterval();
+  function timeInterval(currentTime) {
+    window.requestAnimationFrame(timeInterval);
+    if (currentTime - previousTime < 100) return;
+    previousTime = currentTime;
     gridArray = generateNextArray(gridArray, rowCols);
-  }, duration);
+  }
 });
 
-function getGridSize() {
-  return Number(gridSize[gridSize.selectedIndex].value);
-}
-
+// Creates New Array For Next Generation
 function generateNextArray(gridArray, rowCols) {
   let newArray = [];
   for (let i = 0; i < rowCols; i++) {
@@ -33,6 +36,7 @@ function generateNextArray(gridArray, rowCols) {
   return newArray;
 }
 
+// Update The Cell Based On Neighbouring Cells And Returns The Value
 function nextValue(oldArray, curRow, curCol, rowCols) {
   let count = 0;
   for (let i = curRow - 1; i <= curRow + 1; i++) {
@@ -43,11 +47,16 @@ function nextValue(oldArray, curRow, curCol, rowCols) {
     }
   }
   if (oldArray[curRow][curCol] === 1) count--;
-  if (count < 2 || count > 3) return 0;
-  else if (count === 3) return 1;
-  else return oldArray[curRow][curCol];
+  if (count < 2 || count > 3) {
+    updateCell(rowCols * curRow + curCol, 0);
+    return 0;
+  } else if (count === 3) {
+    updateCell(rowCols * curRow + curCol, 1);
+    return 1;
+  } else return oldArray[curRow][curCol];
 }
 
+// Draws Grid Based On Random Array
 function drawCells(arr, rowCols) {
   for (let i = 0; i < rowCols; i++) {
     for (let j = 0; j < rowCols; j++) {
@@ -56,6 +65,7 @@ function drawCells(arr, rowCols) {
   }
 }
 
+// Draw Initial Cells Based On Randomly Generated Array
 function drawCell(value, row, col) {
   let cell = document.createElement(`div`);
   if (value === 1) cell.classList.add("alive");
@@ -66,10 +76,7 @@ function drawCell(value, row, col) {
   container_grid.appendChild(cell);
 }
 
-function getRandom() {
-  return Math.random() < 0.69 ? 0 : 1;
-}
-
+// Generates Initial Array For Randomly
 function generateRandomArray(rowCols) {
   let tempArray = [];
   for (let i = 0; i < rowCols; i++) {
@@ -79,4 +86,25 @@ function generateRandomArray(rowCols) {
     }
   }
   return tempArray;
+}
+
+// Updates The Changed Cells
+function updateCell(position, value) {
+  if (value === 0) {
+    container_grid.children[position].classList.add("dead");
+    container_grid.children[position].classList.remove("alive");
+  } else {
+    container_grid.children[position].classList.add("alive");
+    container_grid.children[position].classList.remove("dead");
+  }
+}
+
+// Generates Random
+function getRandom() {
+  return Math.random() < 0.69 ? 0 : 1;
+}
+
+// Returns Grid Size Based On Selected Value
+function getGridSize() {
+  return Number(gridSize[gridSize.selectedIndex].value);
 }
