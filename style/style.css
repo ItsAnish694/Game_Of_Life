@@ -21,9 +21,9 @@
   text-align: center;
   flex-direction: column;
   width: 99vh;
+  height: 99vh;
   color: #ffffff;
   gap: 20px;
-  height: 99vh;
   z-index: 1;
 }
 
@@ -74,6 +74,10 @@
 
 @media screen and (orientation: portrait) {
   #container-grid {
+    width: 99vw;
+    height: 99vw;
+  }
+  #startPage {
     width: 99vw;
     height: 99vw;
   }
