@@ -48,10 +48,12 @@ function nextValue(oldArray, curRow, curCol, rowCols) {
   }
   if (oldArray[curRow][curCol] === 1) count--;
   if (count < 2 || count > 3) {
-    updateCell(rowCols * curRow + curCol, 0);
+    if (oldArray[curRow][curCol] === 1)
+      updateCell(rowCols * curRow + curCol, 0);
     return 0;
   } else if (count === 3) {
-    updateCell(rowCols * curRow + curCol, 1);
+    if (oldArray[curRow][curCol] === 0)
+      updateCell(rowCols * curRow + curCol, 1);
     return 1;
   } else return oldArray[curRow][curCol];
 }
